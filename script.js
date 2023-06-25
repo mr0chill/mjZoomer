@@ -183,8 +183,38 @@ skipBackTenButton.addEventListener('click', function() {
 
 let uploadButton = document.getElementById("uploadButton");
 
-uploadButton.addEventListener('change', function() {
+// Function to validate image sizes
+const validateImageSizes = async (files) => {
+    let width, height;
+    for (let file of files) {
+        let img = new Image();
+        img.src = URL.createObjectURL(file);
+        await new Promise((resolve) => {
+            img.onload = () => {
+                if (width && height) {
+                    if (img.width !== width || img.height !== height) {
+                        throw new Error('Images must all be the same frame size');
+                    }
+                } else {
+                    width = img.width;
+                    height = img.height;
+                }
+                resolve();
+            };
+        });
+    }
+    return [width, height];
+};
+
+uploadButton.addEventListener('change', async function() {
     let uploadedFiles = Array.from(this.files); // Convert FileList to Array
+
+    // Validate image sizes and get their dimensions
+    let [width, height] = await validateImageSizes(uploadedFiles);
+
+    // Adjust canvas size
+    canvas.width = width / 2;
+    canvas.height = height / 2;
 
     // Show or hide the download button depending on the number of uploaded files
     if (uploadedFiles.length > 0 && uploadedFiles.length <= 50) {
