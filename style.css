@@ -1,0 +1,33 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #f3f3f3;
+    overflow: hidden;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+canvas {
+    border: 1px solid black;
+}
+
+.slider {
+    width: 100%;
+    height: 25px;
+    margin: 20px 0;
+    background: #d3d3d3;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+}
