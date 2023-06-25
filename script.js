@@ -284,11 +284,20 @@ downloadButton.addEventListener('click', async function () {
 
     let zip = new JSZip();
 
-    for (let i = 0; i <= slider.max; i++) {
+    for (let i = 0; i < slider.max; i++) {
         slider.value = i;
 
         let imageIndex = Math.floor(i / 10);
-        let zoom = 2 - (i % 10) * 0.1;
+        
+        let zoom;
+        if (imageIndex === images.length - 1) {
+            let lastProgress = i - (imageIndex * 10);
+            zoom = 2 - lastProgress * 0.1;
+        } else {
+            let frameProgress = i % 10;
+            zoom = 2 - frameProgress * 0.1;
+        }
+
         imageIndex = Math.min(imageIndex, images.length - 1);
         displayImage(imageIndex, zoom);
 
@@ -304,4 +313,3 @@ downloadButton.addEventListener('click', async function () {
         a.click();
     });
 });
-
