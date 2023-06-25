@@ -140,4 +140,12 @@ button{
 }
 button{
     cursor: pointer;
+    background: white;
+}
+
+.controls{
+    background: white;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: 0.5rem;
 }
