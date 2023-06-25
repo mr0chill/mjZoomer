@@ -10,8 +10,9 @@
       <button @click="skip(-1)">⏪</button>
       <button @click="randomize">⁇</button>
       <button @click="saveImage">📸</button>
+      
       <input type="file" ref="uploadInput" @change="uploadImages" multiple accept="image/*" style="display: none;">
-      <label for="uploadInput">🔼</label>
+      <button @click="upload">🔼</button>
       <button @click="skip(1)">⏩</button>
       <button @click="skip(10)">⏭️</button>
     </div>
@@ -20,62 +21,58 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 
 export default {
   setup() {
-    const canvas = ref(null);
-    const uploadInput = ref(null);
-    const isLoading = ref(true);
-    const sliderValue = ref(0);
-    const images = ref([]);
-    const totalImages = ref(270);
-    const imageExtensions = ['jpeg'];
-    const maxSliderValue = ref((totalImages.value - 1) * 10);
+  const canvas = ref(null);
+  const uploadInput = ref(null);
+  const isLoading = ref(true);
+  const sliderValue = ref(0);
+  const images = ref([]);
+  const totalImages = ref(0);
+  const imageExtensions = ['jpeg'];
+  const maxSliderValue = ref(0); 
 
-    const loadImage = async (path, extension) => {
-      // Implement your fetch request here...
-      let img = new Image();
-      img.src = `/images/${path}.${extension}`;
-      return new Promise((resolve, reject) => {
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-      });
-    };
+  const loadImage = async (path, extension) => {
+    let img = new Image();
+    img.src = `/images/${path}.${extension}`;
+    return new Promise((resolve, reject) => {
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    });
+  };
 
-    const loadImages = async () => {
-      let loadingPromises = [];
-      displayImage(0, 2);
+  const upload = () => {
+    uploadInput.value.click();
+  };
 
-      for (let i = 0; i < totalImages.value; i++) {
-        for (let ext of imageExtensions) {
-          loadingPromises.push(
-            loadImage((i + 1).toString().padStart(3, '0'), ext)
-              .then(img => {
-                images.value[i] = img;
-                if ((i + 1).toString().padStart(3, '0') === '001') {
-                  displayImage(0, 2);
-                }
-              })
-              .catch(err => {
-                console.error(err.message);
-                totalImages.value = i;
-                throw err;
-              })
-          );
+  const loadImages = async () => {
+    let i = 0;
+    const val = true
+    while (val) { 
+      for (let ext of imageExtensions) {
+        try {
+          const img = await loadImage((i + 1).toString().padStart(3, '0'), ext);
+          images.value[i] = img;
+          if ((i + 1).toString().padStart(3, '0') === '001') {
+            displayImage(0, 2);
+          }
+          i++;
+          totalImages.value = i; 
+        } catch (err) {
+          console.error(`Failed to load image: ${i + 1}. Stop loading.`);
+          maxSliderValue.value = (totalImages.value - 1) * 10
+          isLoading.value = false
+          return
         }
-        if (totalImages.value === i) break;
       }
+    }
+  };
 
-      try {
-        await Promise.all(loadingPromises);
-      } catch (err) {
-        console.error(err);
-      }
-
-      maxSliderValue.value = (totalImages.value - 1) * 10;
-      isLoading.value = false;
-    };
+  watch(sliderValue, () => {
+      updateImageAndZoom();
+    });
 
     const displayImage = (index, zoom) => {
       let context = canvas.value.getContext('2d');
@@ -163,6 +160,7 @@ export default {
       randomize,
       skip,
       uploadImages,
+      upload,
       maxSliderValue
     };
   }
