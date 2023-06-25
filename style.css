@@ -56,3 +56,23 @@ canvas {
     font-size: 2em;
     display: none; /* hidden by default */
 }
+
+
+@media screen and (min-width: 500px) {
+    canvas {
+        width: 100%;
+    }
+    
+    h1{
+        font-size: 128px;
+    }
+
+    .slider{
+        max-width: 100%;
+    }
+
+    .slider::-webkit-slider-thumb {
+        width: 30px;
+        height: 30px;
+    }
+}
