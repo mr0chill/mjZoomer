@@ -24,22 +24,29 @@ const loadImage = async (path, extension) => {
     });
 };
 
-// Load images
 let loadImages = async () => {
     let loadingPromises = [];
 
+    // Display the placeholder image initially
+    displayImage(0, 2);
+
     for (let i = 0; i < totalImages; i++) {
-        for(let ext of imageExtensions){
-            loadingPromises.push(loadImage(imagePaths[i], ext)
-                .then(img => {
-                    images[i] = img;
-                })
-                .catch(err => {
-                    console.error(err.message);
-                    // Reached the end of the sequence
-                    totalImages = i;
-                    throw err; // Rethrow to stop loading further images
-                })
+        for (let ext of imageExtensions) {
+            loadingPromises.push(
+                loadImage(imagePaths[i], ext)
+                    .then(img => {
+                        images[i] = img;
+                        // If the loaded image is the placeholder image, redraw the canvas
+                        if (imagePaths[i] === '001') {
+                            displayImage(0, 2);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err.message);
+                        // Reached the end of the sequence
+                        totalImages = i;
+                        throw err; // Rethrow to stop loading further images
+                    })
             );
         }
         if (totalImages === i) break;
@@ -50,26 +57,32 @@ let loadImages = async () => {
     } catch (err) {
         // Do nothing, this is expected when we've reached the end of the sequence
     }
-    
+
     slider.max = (totalImages - 1) * 10; // update slider's max value
     slider.disabled = false; // enable slider after images are loaded
     loading.style.display = "none"; // hide loading screen
-    displayImage(0, 2); // Display the first image
 };
 
 let displayImage = (index, zoom) => {
-    if(images[index]){
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.save();
-        context.translate(canvas.width / 2, canvas.height / 2);
-        context.scale(zoom, zoom);
-        context.translate(-canvas.width / 2, -canvas.height / 2);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.save();
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.scale(zoom, zoom);
+    context.translate(-canvas.width / 2, -canvas.height / 2);
+    if (images[index]) {
         context.drawImage(images[index], 0, 0, canvas.width, canvas.height);
-        context.restore();
     } else {
-        // Image not loaded yet, do nothing
+        // Placeholder image not loaded yet, display a placeholder text
+        context.fillStyle = 'gray';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = 'white';
+        context.font = '24px Arial';
+        context.textAlign = 'center';
+        context.fillText('Loading...', canvas.width / 2, canvas.height / 2);
     }
+    context.restore();
 };
+
 
 loading.style.display = "flex"; // show loading screen
 loadImages();
