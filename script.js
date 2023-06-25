@@ -5,51 +5,52 @@ let loading = document.getElementById("loading");
 
 let images = [];
 let totalImages = 270; // Initial estimated total images
-let retryCount = 2; // Number of retries before giving up
 
 // List of image paths (replace these with your actual image paths)
 let imagePaths = Array.from({ length: totalImages }, (_, i) => `${(i + 1).toString().padStart(3, '0')}`);
 let imageExtensions = ['jpeg']; // Adjust this as needed
 
 // Helper function to load image
-const loadImage = (path, extension) => {
+const loadImage = async (path, extension) => {
+    let response = await fetch(`./images/${path}.${extension}`, {mode: 'no-cors'});
+    if (!response.ok) {
+        throw new Error(`Failed to load image ./images/${path}.${extension}`);
+    }
+    let img = new Image();
+    img.src = `./images/${path}.${extension}`;
     return new Promise((resolve, reject) => {
-        let img = new Image();
         img.onload = () => resolve(img);
         img.onerror = reject;
-        fetch(`./images/${path}.${extension}`)
-            .then(response => {
-                if(response.ok) {
-                    img.src = `./images/${path}.${extension}`;
-                    images.push(img);
-                } else {
-                    reject(new Error(`Failed to load image ./images/${path}.${extension}`));
-                }
-            });
     });
 };
 
 // Load images
 let loadImages = async () => {
-    let failedCount = 0;
+    let loadingPromises = [];
+
     for (let i = 0; i < totalImages; i++) {
         for(let ext of imageExtensions){
-            try {
-                await loadImage(imagePaths[i], ext);
-            } catch (err) {
-                console.error(err.message);
-                failedCount++;
-                if (failedCount < retryCount) {
-                    i--; // Retry
-                } else {
-                    // If reached max retries, assume it's the end of the sequence
+            loadingPromises.push(loadImage(imagePaths[i], ext)
+                .then(img => {
+                    images[i] = img;
+                })
+                .catch(err => {
+                    console.error(err.message);
+                    // Reached the end of the sequence
                     totalImages = i;
-                    break;
-                }
-            }
+                    throw err; // Rethrow to stop loading further images
+                })
+            );
         }
-        if(totalImages === i) break;
+        if (totalImages === i) break;
     }
+
+    try {
+        await Promise.all(loadingPromises);
+    } catch (err) {
+        // Do nothing, this is expected when we've reached the end of the sequence
+    }
+    
     slider.max = (totalImages - 1) * 10; // update slider's max value
     slider.disabled = false; // enable slider after images are loaded
     loading.style.display = "none"; // hide loading screen
