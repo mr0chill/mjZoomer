@@ -217,7 +217,8 @@ const validateImageSizes = async (files) => {
 
 // When 'View Demo' is clicked, show the app container and start loading images
 viewDemoButton.addEventListener('click', function() {
-    appContainer.style.display = "block";
+    appContainer.style.display = "flex";
+    appContainer.style.flexDirection = "column";
     this.style.display = "none";
     createOwnButton.style.display = "none";
     loadImages(); // start loading the images
