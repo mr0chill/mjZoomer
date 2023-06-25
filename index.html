@@ -11,6 +11,8 @@
   <meta property="og:url" content="https://slide.mr0.xyz">
   <meta property="og:image" content="https://slide.mr0.xyz/images/001.jpeg">
   <meta property="og:type" content="website">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ffmpeg.js/3.1.9000/ffmpeg.min.js"></script>
+
 
   <!-- Other necessary meta tags -->
   <title>SLIDE FOR A GOOD TIME</title>
@@ -21,6 +23,16 @@
     <div id="loading"></div>
     <h1 class="hideOnLoad">SLIDE</h1>
     <p class=""hideOnLoad>Not great on mobile.</p>
+    <div class="topcontrols">
+     
+       
+        
+
+
+  
+    
+
+</div>
     <canvas class="hideOnLoad" id="imageCanvas" width="500" height="500"></canvas>
     <input  type="range" min="0" max="99" value="0" class="slider hideOnLoad" id="myRange">
     <div>
@@ -30,11 +42,18 @@
 
         <button id="randomButton" class="hideOnLoad">⁇</button>
     <button id="saveButton" class="hideOnLoad">📸</button>
+    <button style="display:none;" id="saveVideoButton" class="hideOnLoad">📹</button>
+    
+    <input type="file" id="uploadButton" multiple accept="image/*" style="display: none;">
+    <label for="uploadButton" id="uploadLabel">🔼</label>
+
     <button id="skipOne" class="hideOnLoad">⏩</button>
 <button id="skipTen" class="hideOnLoad">⏭️</button>
 
 
 </div>
+<p id="fileName"></p>
+
 
 
     <a class="hideOnLoad"  href="https://github.com/mr0chill/mjZoomer">STEAL THIS CODE</a>

@@ -3,6 +3,7 @@ let canvas = document.getElementById("imageCanvas");
 let context = canvas.getContext("2d");
 let loading = document.getElementById("loading");
 
+
 let images = [];
 let totalImages = 270; // Initial estimated total images
 
@@ -72,7 +73,6 @@ let displayImage = (index, zoom) => {
     if (images[index]) {
         context.drawImage(images[index], 0, 0, canvas.width, canvas.height);
     } else {
-        // Placeholder image not loaded yet, display a placeholder text
         context.fillStyle = 'gray';
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = 'white';
@@ -178,4 +178,53 @@ skipBackTenButton.addEventListener('click', function() {
     let zoom = 2 - (newValue % 10) * 0.1;
     imageIndex = Math.min(imageIndex, images.length - 1);
     displayImage(imageIndex, zoom);
+});
+
+
+let uploadButton = document.getElementById("uploadButton");
+
+uploadButton.addEventListener('change', function() {
+    let uploadedFiles = Array.from(this.files); // Convert FileList to Array
+
+    // Reset the images array
+    images = [];
+
+    // Sort files alphabetically
+    uploadedFiles.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Convert File objects to Image objects and add them to the images array
+    uploadedFiles.forEach((file, index) => {
+        let img = new Image();
+
+        img.src = URL.createObjectURL(file);
+
+        img.onload = () => {
+            URL.revokeObjectURL(img.src); // Release memory
+            images[index] = img;
+
+            // If the first image was loaded, redraw the canvas
+            if (index === 0) {
+                displayImage(0, 2);
+            }
+        };
+    });
+
+    totalImages = uploadedFiles.length; // update total images count
+
+    slider.max = (totalImages - 1) * 10; // update slider's max value
+    slider.value = 0; // reset slider value
+
+    // display the first image immediately
+    displayImage(0, 2);
+});
+
+document.getElementById("uploadButton").addEventListener('change', (event) => {
+    let uploadButton = document.getElementById("uploadButton");
+    let fileName = document.getElementById("fileName");
+
+    if(uploadButton.files.length > 0) {
+        fileName.innerText = uploadButton.files.length + " file(s) selected";
+    } else {
+        fileName.innerText = "No file selected";
+    }
 });

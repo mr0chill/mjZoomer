@@ -68,3 +68,76 @@ a {
 button{
     border: none;
 }
+
+.toggle-switch {
+    position: relative;
+    width: 40px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.toggle-switch-checkbox {
+    display: none;
+}
+
+.toggle-switch-label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #999999;
+    border-radius: 20px;
+    background-color: #eeeeee;
+}
+
+.toggle-switch-inner {
+    width: 0;
+    padding: 0;
+    position: absolute;
+    opacity: 0;
+}
+
+.toggle-switch-switch {
+    display: block;
+    width: 18px;
+    margin: 3px;
+    background: #FFFFFF;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 19px;
+    border: 1px solid #999999;
+    border-radius: 20px;
+    transition: all 0.3s ease-in 0s; 
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
+    right: 3px; 
+}
+
+
+#uploadLabel {
+    appearance: auto;
+    text-rendering: auto;
+    color: buttontext;
+    letter-spacing: normal;
+    word-spacing: normal;
+    line-height: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    box-sizing: border-box;
+    background-color: buttonface;
+    margin: 0em;
+    padding: 1px 6px;
+    font-size: 13.33px;
+    cursor: pointer;
+
+ 
+}
+button{
+    cursor: pointer;
+}
