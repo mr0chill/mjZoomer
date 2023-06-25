@@ -150,3 +150,7 @@ button{
     padding-right: 6px;
     border-radius: 0.5rem;
 }
+
+.button:hover{
+    background: #cfcfcf
+}
