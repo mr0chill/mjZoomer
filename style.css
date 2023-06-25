@@ -149,5 +149,19 @@ button{
     padding-left: 6px;
     padding-right: 6px;
     border-radius: 0.5rem;
+    width: fit-content;
+    margin: auto;
 }
 
+.journey{
+width: 200px;
+margin-bottom: .5rem;
+padding-top: .5rem;
+padding-bottom: .5rem;
+font-weight: bold;
+
+}
+
+.journey:hover{
+    opacity: .9;
+}

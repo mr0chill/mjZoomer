@@ -22,11 +22,15 @@
 </head>
 <body>
     <div id="loading"></div>
-    <h1 style="margin-top: 16px" class="hideOnLoad">SLIDE</h1>
-    <p class=""hideOnLoad>Midjourney 5.2 zoom stitcher</p>
+    <h1 style="margin-top: 16px">SLIDE</h1>
+    <p>Midjourney 5.2 zoom stitcher</p>
+    <button id="createOwn" class="journey first-letter:button">Create your own</button>
+    <button id="viewDemo" class="journey first-letter:button">View demo</button>
+    
 
-    <canvas class="hideOnLoad" id="imageCanvas" width="500" height="500"></canvas>
-    <input  type="range" min="0" max="99" value="0" class="slider hideOnLoad" id="myRange">
+    <div id="appContainer" style="display: none;">
+        <canvas id="imageCanvas" width="500" height="500"></canvas>
+        <input type="range" min="0" max="99" value="0" class="slider" id="myRange">
     <div class="controls">
         <button id="skipBackTen" class="hideOnLoad button">⏮️</button>
         <button id="skipBackOne" class="hideOnLoad button">⏪</button>
@@ -46,9 +50,11 @@
     <button id="skipOne" class="hideOnLoad button">⏩</button>
 <button id="skipTen" class="hideOnLoad button">⏭️</button>
 
-
+    </div>
 </div>
 <p id="fileName"></p>
+
+
 
 
 

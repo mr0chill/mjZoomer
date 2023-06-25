@@ -2,6 +2,10 @@ let slider = document.getElementById("myRange");
 let canvas = document.getElementById("imageCanvas");
 let context = canvas.getContext("2d");
 let loading = document.getElementById("loading");
+let viewDemoButton = document.getElementById("viewDemo");
+let createOwnButton = document.getElementById("createOwn");
+let appContainer = document.getElementById("appContainer");
+let uploadButton = document.getElementById("uploadButton");
 
 
 let images = [];
@@ -187,7 +191,6 @@ skipBackTenButton.addEventListener('click', function() {
 });
 
 
-let uploadButton = document.getElementById("uploadButton");
 
 // Function to validate image sizes
 const validateImageSizes = async (files) => {
@@ -212,6 +215,19 @@ const validateImageSizes = async (files) => {
     return [width, height];
 };
 
+// When 'View Demo' is clicked, show the app container and start loading images
+viewDemoButton.addEventListener('click', function() {
+    appContainer.style.display = "block";
+    this.style.display = "none";
+    createOwnButton.style.display = "none";
+    loadImages(); // start loading the images
+});
+
+// When 'Create my own' is clicked, trigger the file selection
+createOwnButton.addEventListener('click', function() {
+    uploadButton.click(); // simulate click on file input
+});
+
 uploadButton.addEventListener('change', async function() {
     let uploadedFiles = Array.from(this.files); // Convert FileList to Array
 
@@ -223,10 +239,16 @@ uploadButton.addEventListener('change', async function() {
     canvas.height = height / 2;
 
     // Show or hide the download button depending on the number of uploaded files
-    if (uploadedFiles.length > 0 && uploadedFiles.length <= 50) {
-        downloadButton.style.display = 'inline-block';
-    } else {
-        downloadButton.style.display = 'none';
+    if (uploadedFiles.length > 0) {
+        appContainer.style.display = "flex";
+        appContainer.style.flexDirection = "column";
+        viewDemoButton.style.display = "none";
+        createOwnButton.style.display = "none";
+        if (uploadedFiles.length <= 50) {
+            downloadButton.style.display = 'inline-block';
+        } else {
+            downloadButton.style.display = 'none';
+        }
     }
 
     // Reset the images array
@@ -313,3 +335,4 @@ downloadButton.addEventListener('click', async function () {
         a.click();
     });
 });
+
