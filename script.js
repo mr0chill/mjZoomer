@@ -124,3 +124,58 @@ randomButton.addEventListener('click', function () {
     imageIndex = Math.min(imageIndex, images.length - 1);
     displayImage(imageIndex, zoom);
 });
+
+
+let skipOneButton = document.getElementById("skipOne");
+let skipTenButton = document.getElementById("skipTen");
+
+skipOneButton.addEventListener('click', function() {
+    // Ensure that the slider value does not exceed the max value
+    let newValue = Math.min(Number(slider.value) + 1, slider.max);
+    slider.value = newValue;
+    
+    // Update the image and zoom
+    let imageIndex = Math.floor(newValue / 10);
+    let zoom = 2 - (newValue % 10) * 0.1;
+    imageIndex = Math.min(imageIndex, images.length - 1);
+    displayImage(imageIndex, zoom);
+});
+
+skipTenButton.addEventListener('click', function() {
+    // Ensure that the slider value does not exceed the max value
+    let newValue = Math.min(Number(slider.value) + 10, slider.max);
+    slider.value = newValue;
+    
+    // Update the image and zoom
+    let imageIndex = Math.floor(newValue / 10);
+    let zoom = 2 - (newValue % 10) * 0.1;
+    imageIndex = Math.min(imageIndex, images.length - 1);
+    displayImage(imageIndex, zoom);
+});
+
+let skipBackOneButton = document.getElementById("skipBackOne");
+let skipBackTenButton = document.getElementById("skipBackTen");
+
+skipBackOneButton.addEventListener('click', function() {
+    // Ensure that the slider value does not drop below the min value
+    let newValue = Math.max(Number(slider.value) - 1, slider.min);
+    slider.value = newValue;
+
+    // Update the image and zoom
+    let imageIndex = Math.floor(newValue / 10);
+    let zoom = 2 - (newValue % 10) * 0.1;
+    imageIndex = Math.min(imageIndex, images.length - 1);
+    displayImage(imageIndex, zoom);
+});
+
+skipBackTenButton.addEventListener('click', function() {
+    // Ensure that the slider value does not drop below the min value
+    let newValue = Math.max(Number(slider.value) - 10, slider.min);
+    slider.value = newValue;
+
+    // Update the image and zoom
+    let imageIndex = Math.floor(newValue / 10);
+    let zoom = 2 - (newValue % 10) * 0.1;
+    imageIndex = Math.min(imageIndex, images.length - 1);
+    displayImage(imageIndex, zoom);
+});
