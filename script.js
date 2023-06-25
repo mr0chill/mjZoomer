@@ -80,3 +80,4 @@ slider.oninput = function() {
     let zoom = 2 - (val % 10) * 0.1;
     displayImage(imageIndex, zoom);
 };
+
