@@ -58,13 +58,17 @@ let loadImages = async () => {
 };
 
 let displayImage = (index, zoom) => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.save();
-    context.translate(canvas.width / 2, canvas.height / 2);
-    context.scale(zoom, zoom);
-    context.translate(-canvas.width / 2, -canvas.height / 2);
-    context.drawImage(images[index], 0, 0, canvas.width, canvas.height);
-    context.restore();
+    if(images[index]){
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        context.translate(canvas.width / 2, canvas.height / 2);
+        context.scale(zoom, zoom);
+        context.translate(-canvas.width / 2, -canvas.height / 2);
+        context.drawImage(images[index], 0, 0, canvas.width, canvas.height);
+        context.restore();
+    } else {
+        // Image not loaded yet, do nothing
+    }
 };
 
 loading.style.display = "flex"; // show loading screen
