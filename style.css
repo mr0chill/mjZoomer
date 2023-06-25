@@ -58,7 +58,7 @@ canvas {
 }
 
 
-@media screen and (min-width: 500px) {
+@media (min-width: 500px) {
     canvas {
         width: 100%;
     }
