@@ -14,6 +14,7 @@ body {
 h1{
     font-size: 64px;
     margin-top: -32px;
+    margin-bottom: -16px;
 }
 
 canvas {
@@ -58,21 +59,3 @@ canvas {
 }
 
 
-@media (min-width: 500px) {
-    canvas {
-        width: 100%;
-    }
-    
-    h1{
-        font-size: 128px;
-    }
-
-    .slider{
-        max-width: 100%;
-    }
-
-    .slider::-webkit-slider-thumb {
-        width: 30px;
-        height: 30px;
-    }
-}
