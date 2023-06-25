@@ -64,3 +64,7 @@ a {
     margin-top: 16px;
     font-size: .8rem;
 }
+
+button{
+    border: none;
+}
