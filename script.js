@@ -223,8 +223,8 @@ document.getElementById("uploadButton").addEventListener('change', (event) => {
     let fileName = document.getElementById("fileName");
 
     if(uploadButton.files.length > 0) {
-        fileName.innerText = uploadButton.files.length + " file(s) selected";
+        fileName.innerText = uploadButton.files.length + " images added";
     } else {
-        fileName.innerText = "No file selected";
+        fileName.innerText = "No images added";
     }
 });
