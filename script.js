@@ -91,7 +91,7 @@ loadImages();
 slider.oninput = function() {
     let val = this.value;
     let imageIndex = Math.floor(val / 10);
-    let zoom = 2 - ((val % 10) / 10);  // Modify this line
+    let zoom = 2 - (val % 10) * 0.1;
 
     // Limit imageIndex to the length of the images array
     imageIndex = Math.min(imageIndex, images.length - 1);
