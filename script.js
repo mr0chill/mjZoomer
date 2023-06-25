@@ -98,7 +98,7 @@ slider.oninput = function() {
         zoom = 2 - lastProgress * 0.1;
     } else {
         let frameProgress = val % 10;
-        zoom = 2 - frameProgress * 0.09;
+        zoom = 2 - frameProgress * 0.1;
     }
 
     displayImage(imageIndex, zoom);
@@ -295,7 +295,7 @@ downloadButton.addEventListener('click', async function () {
             zoom = 2 - lastProgress * 0.1;
         } else {
             let frameProgress = i % 10;
-            zoom = 2 - frameProgress * 0.09;
+            zoom = 2 - frameProgress * 0.1;
         }
 
         imageIndex = Math.min(imageIndex, images.length - 1);
