@@ -111,3 +111,16 @@ saveButton.addEventListener('click', function () {
 });
 
 
+let randomButton = document.getElementById("randomButton");
+
+randomButton.addEventListener('click', function () {
+    // Generate a random integer between 0 and the slider's max value
+    let randomValue = Math.floor(Math.random() * (slider.max - slider.min + 1)) + Number(slider.min);
+    slider.value = randomValue;
+
+    // Update the image and zoom based on the new slider value
+    let imageIndex = Math.floor(randomValue / 10);
+    let zoom = 2 - (randomValue % 10) * 0.1;
+    imageIndex = Math.min(imageIndex, images.length - 1);
+    displayImage(imageIndex, zoom);
+});
