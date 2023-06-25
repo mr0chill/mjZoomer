@@ -11,7 +11,8 @@
   <meta property="og:url" content="https://slide.mr0.xyz">
   <meta property="og:image" content="https://slide.mr0.xyz/images/001.jpeg">
   <meta property="og:type" content="website">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ffmpeg.js/3.1.9000/ffmpeg.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+
 
 
   <!-- Other necessary meta tags -->
@@ -23,16 +24,7 @@
     <div id="loading"></div>
     <h1 class="hideOnLoad">SLIDE</h1>
     <p class=""hideOnLoad>Better on desktop.</p>
-    <div class="topcontrols">
-     
-       
-        
 
-
-  
-    
-
-</div>
     <canvas class="hideOnLoad" id="imageCanvas" width="500" height="500"></canvas>
     <input  type="range" min="0" max="99" value="0" class="slider hideOnLoad" id="myRange">
     <div>
@@ -42,6 +34,8 @@
 
         <button id="randomButton" class="hideOnLoad">⁇</button>
     <button id="saveButton" class="hideOnLoad">📸</button>
+    <button id="download" class="hideOnLoad" style="display: none;">💾</button>
+
     <button style="display:none;" id="saveVideoButton" class="hideOnLoad">📹</button>
     
     <input type="file" id="uploadButton" multiple accept="image/*" style="display: none;">

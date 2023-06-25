@@ -186,6 +186,13 @@ let uploadButton = document.getElementById("uploadButton");
 uploadButton.addEventListener('change', function() {
     let uploadedFiles = Array.from(this.files); // Convert FileList to Array
 
+    // Show or hide the download button depending on the number of uploaded files
+    if (uploadedFiles.length > 0 && uploadedFiles.length <= 50) {
+        downloadButton.style.display = 'inline-block';
+    } else {
+        downloadButton.style.display = 'none';
+    }
+
     // Reset the images array
     images = [];
 
@@ -228,3 +235,37 @@ document.getElementById("uploadButton").addEventListener('change', (event) => {
         fileName.innerText = "No images added";
     }
 });
+
+
+let downloadButton = document.getElementById("download");
+
+downloadButton.addEventListener('click', async function () {
+    let confirmation = confirm("Warning, this function can crash your browser if it can't handle the number of images. Proceed?");
+    
+    if (!confirmation) {
+        return;
+    }
+
+    let zip = new JSZip();
+
+    for (let i = 0; i <= slider.max; i++) {
+        slider.value = i;
+
+        let imageIndex = Math.floor(i / 10);
+        let zoom = 2 - (i % 10) * 0.1;
+        imageIndex = Math.min(imageIndex, images.length - 1);
+        displayImage(imageIndex, zoom);
+
+        let dataUrl = canvas.toDataURL('image/png');
+        let base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+        zip.file(`SLIDE ${i}.png`, base64Data, {base64: true});
+    }
+
+    zip.generateAsync({type:"blob"}).then(function(content) {
+        let a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = 'SLIDES.zip';
+        a.click();
+    });
+});
+
