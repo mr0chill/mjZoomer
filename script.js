@@ -90,14 +90,20 @@ loadImages();
 
 slider.oninput = function() {
     let val = this.value;
-    let imageIndex = Math.floor(val / 10);
-    let zoom = 2 - (val % 10) * 0.1;
+    let imageIndex = Math.min(Math.floor(val / 10), images.length - 1);
 
-    // Limit imageIndex to the length of the images array
-    imageIndex = Math.min(imageIndex, images.length - 1);
+    let zoom;
+    if (imageIndex === images.length - 1) {
+        let lastProgress = val - (imageIndex * 10);
+        zoom = 2 - lastProgress * 0.1;
+    } else {
+        let frameProgress = val % 10;
+        zoom = 2 - frameProgress * 0.1;
+    }
 
     displayImage(imageIndex, zoom);
 };
+
 
 
 let saveButton = document.getElementById("saveButton");
@@ -248,7 +254,7 @@ uploadButton.addEventListener('change', async function() {
 
     totalImages = uploadedFiles.length; // update total images count
 
-    slider.max = (totalImages - 1) * 10; // update slider's max value
+    slider.max = totalImages  * 10; // update slider's max value
     slider.value = 0; // reset slider value
 
     // display the first image immediately
