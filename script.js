@@ -85,6 +85,7 @@ let displayImage = (index, zoom) => {
 
 
 loading.style.display = "flex"; // show loading screen
+
 loadImages();
 
 slider.oninput = function() {
