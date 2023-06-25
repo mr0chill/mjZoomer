@@ -95,3 +95,14 @@ slider.oninput = function() {
     displayImage(imageIndex, zoom);
 };
 
+let saveButton = document.getElementById("saveButton");
+
+saveButton.addEventListener('click', function () {
+    let dataUrl = canvas.toDataURL('image/png');
+    let a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'SLIDE ' + slider.value + '.png';
+    a.click();
+});
+
+
