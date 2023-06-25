@@ -59,3 +59,37 @@ canvas {
 }
 
 
+#loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .loading-animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .loading-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #000;
+    border-radius: 50%;
+    margin: 0 5px;
+    opacity: 0;
+    animation: loading-animation 1s infinite;
+  }
+  
+  @keyframes loading-animation {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
