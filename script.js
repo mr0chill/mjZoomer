@@ -93,24 +93,20 @@ loading.style.display = "flex"; // show loading screen
 loadImages();
 
 slider.oninput = function() {
-    let val = this.value
-    let imageIndex = Math.min(Math.floor(val / 10), images.length - 1)
+    let val = this.value;
+    let imageIndex = Math.min(Math.floor(val / 10), images.length - 1);
 
-    let zoom
+    let zoom;
     if (imageIndex === images.length - 1) {
-        let lastProgress = val - (imageIndex * 10)
-        zoom = 2 - lastProgress * 0.1
+        let lastProgress = val - (imageIndex * 10);
+        zoom = 2 - lastProgress * 0.1;
     } else {
-        let frameProgress = val % 10
-        zoom = 2 - frameProgress * 0.1
-        if (zoom <= 1.1) { 
-            zoom = 1.1
-        }
+        let frameProgress = val % 10;
+        zoom = 2 - frameProgress * 0.1;
     }
 
     displayImage(imageIndex, zoom);
 };
-
 
 
 
@@ -316,16 +312,13 @@ downloadButton.addEventListener('click', async function () {
 
         let imageIndex = Math.floor(i / 10);
         
-        let zoom
+        let zoom;
         if (imageIndex === images.length - 1) {
-            let lastProgress = i - (imageIndex * 10)
-            zoom = 2 - lastProgress * 0.1
+            let lastProgress = i - (imageIndex * 10);
+            zoom = 2 - lastProgress * 0.1;
         } else {
-            let frameProgress = i % 10
-            zoom = 2 - frameProgress * 0.1
-            if (zoom <= 1.1) { 
-                zoom = 1.1
-            }
+            let frameProgress = i % 10;
+            zoom = 2 - frameProgress * 0.1;
         }
 
         imageIndex = Math.min(imageIndex, images.length - 1);
