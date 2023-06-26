@@ -168,8 +168,8 @@ font-weight: bold;
     opacity: .9;
 }
 
-.appContainer{
-    padding: 8px;
+#appContainer{
+    padding: 16px;
 }
 
 * {
@@ -178,6 +178,6 @@ font-weight: bold;
 
 @media screen and (max-width: 500px){
     h1{
-        margin-top: -32px;
+        margin-top: -100px !important;
     }
 }
