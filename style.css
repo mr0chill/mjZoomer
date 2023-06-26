@@ -19,6 +19,7 @@ h1{
 
 canvas {
     border: 1px solid black;
+    max-width: 100%
 }
 
 .slider {
@@ -165,4 +166,8 @@ font-weight: bold;
 
 .journey:hover{
     opacity: .9;
+}
+
+.appContainer{
+    padding: 8px;
 }
