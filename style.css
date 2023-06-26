@@ -175,3 +175,9 @@ font-weight: bold;
 * {
     touch-action: manipulation;
 }
+
+@media screen and (max-width: 500px){
+    h1{
+        margin-top: -32px;
+    }
+}
