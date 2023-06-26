@@ -61,44 +61,6 @@
     <a class="hideOnLoad"  href="https://github.com/mr0chill/mjZoomer">STEAL THIS CODE</a>
 
     <script src="script.js"></script>
-    <script>
-        var imageCanvas = document.getElementById('imageCanvas');
-
-imageCanvas.addEventListener('click', function() {
-    // Check if the DeviceOrientationEvent is supported
-    if (window.DeviceOrientationEvent) {
-        // Check for permission (required in some browsers)
-        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission()
-                .then(permissionState => {
-                    if (permissionState === 'granted') {
-                        window.addEventListener('deviceorientation', handleOrientation);
-                    } else {
-                        alert('Permission not granted for DeviceOrientation');
-                    }
-                })
-                .catch(console.error);
-        } else {
-            // For browsers not requiring permission
-            window.addEventListener('deviceorientation', handleOrientation);
-        }
-    } else {
-        alert('Your device does not support DeviceOrientation');
-    }
-});
-
-function handleOrientation(event) {
-    var beta = event.beta;
-    var slider = document.getElementById('myRange');
-
-    // Normalize the beta value within the range 0-99
-    var normalizedBeta = Math.min(Math.max(parseInt((beta + 90) / 1.8), 0), 99);
-
-    // Set the value of the slider
-    slider.value = normalizedBeta;
-}
-
-        
-    </script>
+    
 </body>
 </html>
