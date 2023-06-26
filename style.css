@@ -29,7 +29,6 @@ canvas {
     background: #111111;
     outline: none;
     -webkit-appearance: none;
-    max-width: 80%;
 }
 
 .slider::-webkit-slider-thumb {
