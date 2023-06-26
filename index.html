@@ -61,5 +61,18 @@
     <a class="hideOnLoad"  href="https://github.com/mr0chill/mjZoomer">STEAL THIS CODE</a>
 
     <script src="script.js"></script>
+    <script>
+        window.addEventListener('deviceorientation', function(event) {
+            var beta = event.beta;
+            var slider = document.getElementById('myRange');
+            
+            // Normalize the beta value within the range 0-99
+            var normalizedBeta = Math.min(Math.max(parseInt((beta + 90) / 1.8), 0), 99);
+            
+            // Set the value of the slider
+            slider.value = normalizedBeta;
+        });
+        
+    </script>
 </body>
 </html>
