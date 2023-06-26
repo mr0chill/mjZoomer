@@ -30,43 +30,36 @@ const loadImage = async (path, extension) => {
 };
 
 let loadImages = async () => {
-    let loadingPromises = [];
-
-    // Display the placeholder image initially
-    displayImage(0, 2);
-
+    slider.disabled = true; // disable slider before loading images
+    loading.style.display = "flex"; // show loading screen
     for (let i = 0; i < totalImages; i++) {
         for (let ext of imageExtensions) {
-            loadingPromises.push(
-                loadImage(imagePaths[i], ext)
-                    .then(img => {
-                        images[i] = img;
-                        // If the loaded image is the placeholder image, redraw the canvas
-                        if (imagePaths[i] === '001') {
-                            displayImage(0, 2);
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err.message);
-                        // Reached the end of the sequence
-                        totalImages = i;
-                        throw err; // Rethrow to stop loading further images
-                    })
-            );
+            try {
+                let img = await loadImage(imagePaths[i], ext);
+                images[i] = img;
+
+                // If the loaded image is the placeholder image, redraw the canvas
+                if (imagePaths[i] === '001') {
+                    displayImage(0, 2);
+                }
+            } catch(err) {
+                console.error(err.message);
+                // Reached the end of the sequence
+                totalImages = i;
+                break; // Stop loading further images
+            }
         }
+
+        // Enable slider and hide loading screen after each image is loaded
+        slider.disabled = false; 
+        loading.style.display = "none"; 
+
         if (totalImages === i) break;
     }
 
-    try {
-        await Promise.all(loadingPromises);
-    } catch (err) {
-        // Do nothing, this is expected when we've reached the end of the sequence
-    }
-
     slider.max = (totalImages - 1) * 10; // update slider's max value
-    slider.disabled = false; // enable slider after images are loaded
-    loading.style.display = "none"; // hide loading screen
 };
+
 
 let displayImage = (index, zoom) => {
     context.clearRect(0, 0, canvas.width, canvas.height);
