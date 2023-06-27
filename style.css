@@ -3,6 +3,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
     height: 100vh;
     margin: 0;
     background: black;
@@ -171,21 +172,29 @@ font-weight: bold;
     padding: 16px;
 }
 
-* {
-    touch-action: manipulation;
-}
+
 
 @media screen and (max-width: 500px){
     h1{
         margin-top: -100px !important;
     }
+    * {
+        touch-action: manipulation;
+    }
 }
 
 input#zoomInput {
-    width: 3rem;
-    background: #1d1d1d;
-    border: 1px solid white;
+    width: 1.25rem;
+    background: black;
+    border: 1px solid rgb(75, 75, 75);;
     color: white;
+    padding: 0.2rem 0.4rem;
+    text-align: center;
+    outline: none;
+}
+
+input#zoomInput:focus {
+border: 1px solid #cf0;
 }
 
 .zoom-control {
@@ -194,4 +203,19 @@ input#zoomInput {
     align-items: baseline;
     gap: 0.5rem;
     margin-top: 1rem;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+#fileName{
+    text-align: center;
 }

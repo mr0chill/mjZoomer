@@ -8,6 +8,8 @@ let appContainer = document.getElementById("appContainer");
 let uploadButton = document.getElementById("uploadButton");
 let zoomInput = document.getElementById("zoomInput");
 let zoomControls = document.getElementById("zoomControls");
+let heading = document.getElementById("zoomControls");
+let subheading = document.getElementById("zoomControls");
 
 let maxZoom = 2; // Initialize with the default zoom level
 
@@ -22,7 +24,7 @@ let imageExtensions = ['jpeg']; // Adjust this as needed
 // Listen for changes to the zoom input
 zoomInput.addEventListener('change', function() {
     maxZoom = Number(this.value);
-    slider.max = (totalImages - 1) * 10 * maxZoom; // Update the slider's max value
+    slider.max = (maxZoom - 1) * 10 * totalImages // Update the slider's max value
     displayImage(Math.floor(slider.value / (10 * maxZoom)), maxZoom - (slider.value % (10 * maxZoom)) * 0.1);
 });
 
@@ -78,7 +80,7 @@ let loadImages = async () => {
         // Do nothing, this is expected when we've reached the end of the sequence
     }
 
-    slider.max = (totalImages - 1) * 10; // update slider's max value after all images are loaded
+    slider.max = (maxZoom - 1) * 10 * totalImages; // update slider's max value after all images are loaded
 };
 
 loading.style.display = "flex"; // show loading screen
@@ -112,20 +114,20 @@ loadImages();
 
 slider.oninput = function() {
     let val = this.value;
-    let imageIndex = Math.min(Math.floor(val / (10 * maxZoom)), images.length - 1);
+    let framesPerImage = slider.max / totalImages + 1;
+    let imageIndex = Math.floor(val / framesPerImage);
 
     let zoom;
-    if (imageIndex === images.length - 1) {
-        let lastProgress = val - (imageIndex * 10 * maxZoom);
-        zoom = maxZoom - lastProgress * 0.01;
+    if (val % framesPerImage === 0) {
+        zoom = maxZoom;
     } else {
-        let frameProgress = val % (10 * maxZoom);
-        zoom = maxZoom - frameProgress * 0.01;
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (maxZoom - 1.1) / framesPerImage;
+        zoom = maxZoom - frameProgress * zoomDecrement;
     }
 
     displayImage(imageIndex, zoom);
 };
-
 
 
 let saveButton = document.getElementById("saveButton");
@@ -161,11 +163,17 @@ skipOneButton.addEventListener('click', function() {
     // Ensure that the slider value does not exceed the max value
     let newValue = Math.min(Number(slider.value) + 1, slider.max);
     slider.value = newValue;
-    
-    // Update the image and zoom
-    let imageIndex = Math.floor(newValue / 10);
-    let zoom = 2 - (newValue % 10) * 0.1;
-    imageIndex = Math.min(imageIndex, images.length - 1);
+    let val = newValue
+    let framesPerImage = slider.max / totalImages + 1;
+    let imageIndex = Math.floor(val / framesPerImage);
+    let zoom;
+    if (val % framesPerImage === 0) {
+        zoom = maxZoom;
+    } else {
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (maxZoom - 1.1) / framesPerImage;
+        zoom = maxZoom - frameProgress * zoomDecrement;
+    }
     displayImage(imageIndex, zoom);
 });
 
@@ -173,38 +181,57 @@ skipTenButton.addEventListener('click', function() {
     // Ensure that the slider value does not exceed the max value
     let newValue = Math.min(Number(slider.value) + 10, slider.max);
     slider.value = newValue;
-    
-    // Update the image and zoom
-    let imageIndex = Math.floor(newValue / 10);
-    let zoom = 2 - (newValue % 10) * 0.1;
-    imageIndex = Math.min(imageIndex, images.length - 1);
+    let val = newValue
+    let framesPerImage = slider.max / totalImages + 1;
+    let imageIndex = Math.floor(val / framesPerImage);
+    let zoom;
+    if (val % framesPerImage === 0) {
+        zoom = maxZoom;
+    } else {
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (maxZoom - 1.1) / framesPerImage;
+        zoom = maxZoom - frameProgress * zoomDecrement;
+    }
     displayImage(imageIndex, zoom);
 });
 
 let skipBackOneButton = document.getElementById("skipBackOne");
 let skipBackTenButton = document.getElementById("skipBackTen");
 
+
 skipBackOneButton.addEventListener('click', function() {
     // Ensure that the slider value does not drop below the min value
-    let newValue = Math.max(Number(slider.value) - 1, slider.min);
+    let newValue = Math.min(Number(slider.value) - 1, slider.max);
     slider.value = newValue;
-
-    // Update the image and zoom
-    let imageIndex = Math.floor(newValue / 10);
-    let zoom = 2 - (newValue % 10) * 0.1;
-    imageIndex = Math.min(imageIndex, images.length - 1);
+    let val = newValue
+    let framesPerImage = slider.max / totalImages + 1;
+    let imageIndex = Math.floor(val / framesPerImage);
+    let zoom;
+    if (val % framesPerImage === 0) {
+        zoom = maxZoom;
+    } else {
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (maxZoom - 1.1) / framesPerImage;
+        zoom = maxZoom - frameProgress * zoomDecrement;
+    }
     displayImage(imageIndex, zoom);
 });
 
 skipBackTenButton.addEventListener('click', function() {
     // Ensure that the slider value does not drop below the min value
-    let newValue = Math.max(Number(slider.value) - 10, slider.min);
+    let newValue = Math.min(Number(slider.value) - 10, slider.max);
     slider.value = newValue;
-
-    // Update the image and zoom
-    let imageIndex = Math.floor(newValue / 10);
-    let zoom = 2 - (newValue % 10) * 0.1;
-    imageIndex = Math.min(imageIndex, images.length - 1);
+    let val = newValue
+    let framesPerImage = slider.max / totalImages + 1;
+    let imageIndex = Math.floor(val / framesPerImage);
+    let zoom;
+    if (val % framesPerImage === 0) {
+        zoom = maxZoom;
+    } else {
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (maxZoom - 1.1) / framesPerImage;
+        zoom = maxZoom - frameProgress * zoomDecrement;
+    }
     displayImage(imageIndex, zoom);
 });
 
@@ -264,11 +291,15 @@ uploadButton.addEventListener('change', async function() {
         viewDemoButton.style.display = "none";
         zoomControls.style.display = "flex";
         createOwnButton.style.display = "none";
+        subheading.style.display = "none";
+        heading.style.display = "none";
         if (uploadedFiles.length <= 50) {
             downloadButton.style.display = 'inline-block';
         } else {
             downloadButton.style.display = 'none';
             zoomControls.style.display = "none";
+            subheading.style.display = "none";
+        heading.style.display = "none";
         }
     }
 
@@ -327,21 +358,19 @@ downloadButton.addEventListener('click', async function () {
 
     let zip = new JSZip();
 
-    for (let i = 0; i < slider.max; i++) {
+    for (let i = 0; i <= slider.max; i++) {
         slider.value = i;
-
-        let imageIndex = Math.floor(i / 10);
+        let framesPerImage = slider.max / totalImages + 1
+        let imageIndex = Math.floor(i / framesPerImage);
         
         let zoom;
-        if (imageIndex === images.length - 1) {
-            let lastProgress = i - (imageIndex * 10);
-            zoom = 2 - lastProgress * 0.1;
+        if (i % framesPerImage === 0){
+            zoom = maxZoom
         } else {
-            let frameProgress = i % 10;
-            zoom = 2 - frameProgress * 0.1;
+            let frameProgress = i % framesPerImage
+            let zoomDecrement = (maxZoom - 1.1) / framesPerImage
+            zoom = maxZoom - frameProgress * zoomDecrement
         }
-
-        imageIndex = Math.min(imageIndex, images.length - 1);
         displayImage(imageIndex, zoom);
 
         let dataUrl = canvas.toDataURL('image/png');
