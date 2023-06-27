@@ -25,10 +25,11 @@
     <p id="subheading" style="text-align: center">Midjourney Zoom Stitcher</p>
     <button id="createOwn" class="journey first-letter:button">Create your own</button>
     <button id="viewDemo" class="journey first-letter:button">View demo</button>
+    <button id="tutorialButton" onclick="location.href='https://twitter.com/mr0chill/status/1673095555168468994'" class="journey first-letter:button">Tutorial video</button>
     
 
     <div id="appContainer" style="display: none;">
-    
+        <p  id="fileName"></p>
         <canvas id="imageCanvas" width="500" height="500"></canvas>
         <input type="range" min="0" max="99" value="0" class="slider" id="myRange">
     <div class="controls">
@@ -56,11 +57,10 @@
         <input type="number" id="zoomInput" min="1.1"  step="0.1" value="2">
         <p class="zoom-indicator">x</p>
     </div>
-    <p  id="fileName"></p>
 </div>
 
 
-    <a class="hideOnLoad"  href="https://github.com/mr0chill/mjZoomer">STEAL THIS CODE</a>
+    <a id="steal" class="hideOnLoad"  href="https://github.com/mr0chill/mjZoomer">STEAL THIS CODE</a>
 
     <script src="script.js"></script>
     

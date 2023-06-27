@@ -8,8 +8,10 @@ let appContainer = document.getElementById("appContainer");
 let uploadButton = document.getElementById("uploadButton");
 let zoomInput = document.getElementById("zoomInput");
 let zoomControls = document.getElementById("zoomControls");
-let heading = document.getElementById("zoomControls");
-let subheading = document.getElementById("zoomControls");
+let heading = document.getElementById("heading");
+let subheading = document.getElementById("subheading");
+let steal = document.getElementById("steal");
+let tutorialButton = document.getElementById("tutorialButton");
 
 let maxZoom = 2; // Initialize with the default zoom level
 
@@ -266,6 +268,8 @@ viewDemoButton.addEventListener('click', function() {
     appContainer.style.flexDirection = "column";
     this.style.display = "none";
     createOwnButton.style.display = "none";
+    tutorialButton.style.display = "none";
+    subheading.style.display = "none";
     loadImages(); // start loading the images
 });
 
@@ -293,13 +297,14 @@ uploadButton.addEventListener('change', async function() {
         createOwnButton.style.display = "none";
         subheading.style.display = "none";
         heading.style.display = "none";
+        steal.style.display = "none";
+        tutorialButton.style.display = "none";
         if (uploadedFiles.length <= 50) {
             downloadButton.style.display = 'inline-block';
         } else {
             downloadButton.style.display = 'none';
-            zoomControls.style.display = "none";
-            subheading.style.display = "none";
-        heading.style.display = "none";
+        
+
         }
     }
 
