@@ -6,6 +6,10 @@ let viewDemoButton = document.getElementById("viewDemo");
 let createOwnButton = document.getElementById("createOwn");
 let appContainer = document.getElementById("appContainer");
 let uploadButton = document.getElementById("uploadButton");
+let zoomInput = document.getElementById("zoomInput");
+let zoomControls = document.getElementById("zoomControls");
+
+let maxZoom = 2; // Initialize with the default zoom level
 
 
 let images = [];
@@ -14,6 +18,14 @@ let totalImages = 270; // Initial estimated total images
 // List of image paths (replace these with your actual image paths)
 let imagePaths = Array.from({ length: totalImages }, (_, i) => `${(i + 1).toString().padStart(3, '0')}`);
 let imageExtensions = ['jpeg']; // Adjust this as needed
+
+// Listen for changes to the zoom input
+zoomInput.addEventListener('change', function() {
+    maxZoom = Number(this.value);
+    slider.max = (totalImages - 1) * 10 * maxZoom; // Update the slider's max value
+    displayImage(Math.floor(slider.value / (10 * maxZoom)), maxZoom - (slider.value % (10 * maxZoom)) * 0.1);
+});
+
 
 // Helper function to load image
 const loadImage = async (path, extension) => {
@@ -100,15 +112,15 @@ loadImages();
 
 slider.oninput = function() {
     let val = this.value;
-    let imageIndex = Math.min(Math.floor(val / 10), images.length - 1);
+    let imageIndex = Math.min(Math.floor(val / (10 * maxZoom)), images.length - 1);
 
     let zoom;
     if (imageIndex === images.length - 1) {
-        let lastProgress = val - (imageIndex * 10);
-        zoom = 2 - lastProgress * 0.1;
+        let lastProgress = val - (imageIndex * 10 * maxZoom);
+        zoom = maxZoom - lastProgress * 0.01;
     } else {
-        let frameProgress = val % 10;
-        zoom = 2 - frameProgress * 0.1;
+        let frameProgress = val % (10 * maxZoom);
+        zoom = maxZoom - frameProgress * 0.01;
     }
 
     displayImage(imageIndex, zoom);
@@ -250,11 +262,13 @@ uploadButton.addEventListener('change', async function() {
         appContainer.style.display = "flex";
         appContainer.style.flexDirection = "column";
         viewDemoButton.style.display = "none";
+        zoomControls.style.display = "flex";
         createOwnButton.style.display = "none";
         if (uploadedFiles.length <= 50) {
             downloadButton.style.display = 'inline-block';
         } else {
             downloadButton.style.display = 'none';
+            zoomControls.style.display = "none";
         }
     }
 

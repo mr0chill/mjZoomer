@@ -180,3 +180,18 @@ font-weight: bold;
         margin-top: -100px !important;
     }
 }
+
+input#zoomInput {
+    width: 3rem;
+    background: #1d1d1d;
+    border: 1px solid white;
+    color: white;
+}
+
+.zoom-control {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
