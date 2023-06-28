@@ -116,7 +116,6 @@ loadImages();
 
 slider.oninput = function() {
     let val = this.value;
-
     let framesPerImage = Math.ceil(slider.max / totalImages);
     let imageIndex = Math.min(Math.floor(val / framesPerImage), totalImages - 1);
 
@@ -124,18 +123,25 @@ slider.oninput = function() {
 
     let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
 
-    // Calculate zoom based on frame progress
     let zoom;
     if (frameProgress === 0 && imageIndex !== totalImages - 1) {
         zoom = maxZoom;
     } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        zoom = 1;
+        if(val == slider.max){
+            zoom = 1.0
+        } else {
+            zoom = maxZoom;
+        }   
     } else {
         zoom = maxZoom - frameProgress * zoomDecrement;
     }
 
     displayImage(imageIndex, zoom);
 };
+
+
+
+
 
 
 
@@ -181,7 +187,11 @@ skipOneButton.addEventListener('click', function() {
     if (frameProgress === 0 && imageIndex !== totalImages - 1) {
         zoom = maxZoom;
     } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        zoom = 1;
+        if(val == slider.max){
+            zoom = 1.0
+        } else {
+            zoom = maxZoom;
+        }   
     } else {
         zoom = maxZoom - frameProgress * zoomDecrement;
     }
@@ -201,7 +211,11 @@ skipTenButton.addEventListener('click', function() {
     if (frameProgress === 0 && imageIndex !== totalImages - 1) {
         zoom = maxZoom;
     } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        zoom = 1;
+        if(val == slider.max){
+            zoom = 1.0
+        } else {
+            zoom = maxZoom;
+        }   
     } else {
         zoom = maxZoom - frameProgress * zoomDecrement;
     }
@@ -225,7 +239,11 @@ skipBackOneButton.addEventListener('click', function() {
     if (frameProgress === 0 && imageIndex !== totalImages - 1) {
         zoom = maxZoom;
     } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        zoom = 1;
+        if(val == slider.max){
+            zoom = 1.0
+        } else {
+            zoom = maxZoom;
+        }   
     } else {
         zoom = maxZoom - frameProgress * zoomDecrement;
     }
@@ -245,7 +263,11 @@ skipBackTenButton.addEventListener('click', function() {
     if (frameProgress === 0 && imageIndex !== totalImages - 1) {
         zoom = maxZoom;
     } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        zoom = 1;
+        if(val == slider.max){
+            zoom = 1.0
+        } else {
+            zoom = maxZoom;
+        }   
     } else {
         zoom = maxZoom - frameProgress * zoomDecrement;
     }
@@ -389,7 +411,11 @@ downloadButton.addEventListener('click', async function () {
         if (frameProgress === 0 && imageIndex !== totalImages - 1) {
             zoom = maxZoom;
         } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-            zoom = 1;
+            if (i == slider.max){
+                zoom = 1;
+            } else {
+                zoom = maxZoom
+            }
         } else {
             zoom = maxZoom - frameProgress * zoomDecrement;
         }
