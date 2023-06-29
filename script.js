@@ -17,7 +17,7 @@ let maxZoom = 2; // Initialize with the default zoom level
 
 
 let images = [];
-let totalImages = 270; // Initial estimated total images
+let totalImages = 50; // Initial estimated total images
 
 // List of image paths (replace these with your actual image paths)
 let imagePaths = Array.from({ length: totalImages }, (_, i) => `${(i + 1).toString().padStart(3, '0')}`);
