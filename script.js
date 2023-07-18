@@ -1,437 +1,310 @@
-let slider = document.getElementById("myRange");
-let canvas = document.getElementById("imageCanvas");
-let context = canvas.getContext("2d");
-let loading = document.getElementById("loading");
-let viewDemoButton = document.getElementById("viewDemo");
-let createOwnButton = document.getElementById("createOwn");
-let appContainer = document.getElementById("appContainer");
-let uploadButton = document.getElementById("uploadButton");
-let zoomInput = document.getElementById("zoomInput");
-let zoomControls = document.getElementById("zoomControls");
-let heading = document.getElementById("heading");
-let subheading = document.getElementById("subheading");
-let steal = document.getElementById("steal");
-let tutorialButton = document.getElementById("tutorialButton");
-
-let maxZoom = 2; // Initialize with the default zoom level
-
-
-let images = [];
-let totalImages = 50; // Initial estimated total images
-
-// List of image paths (replace these with your actual image paths)
-let imagePaths = Array.from({ length: totalImages }, (_, i) => `${(i + 1).toString().padStart(3, '0')}`);
-let imageExtensions = ['jpeg']; // Adjust this as needed
-
-// Listen for changes to the zoom input
-zoomInput.addEventListener('change', function() {
-    maxZoom = Number(this.value);
-    slider.max = (maxZoom - 1) * 10 * totalImages // Update the slider's max value
-    displayImage(Math.floor(slider.value / (10 * maxZoom)), maxZoom - (slider.value % (10 * maxZoom)) * 0.1);
-});
-
-
-// Helper function to load image
-const loadImage = async (path, extension) => {
-    let response = await fetch(`./images/${path}.${extension}`, {mode: 'no-cors'});
-    if (!response.ok) {
-        throw new Error(`Failed to load image ./images/${path}.${extension}`);
+class SlideApp {
+    constructor() {
+        this.domElements = this.getDomElements();
+        this.maxZoom = 2; 
+        this.images = [];
+        this.totalImages = 50;
+        this.imagePaths = Array.from({ length: this.totalImages }, (_, i) => `${(i + 1).toString().padStart(3, '0')}`);
+        this.imageExtensions = ['jpeg'];
+        this.addEventListeners();
+        this.loadImages();
     }
-    let img = new Image();
-    img.src = `./images/${path}.${extension}`;
-    return new Promise((resolve, reject) => {
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-    });
-};
 
-let loadImages = async () => {
-    let loadingPromises = [];
+    getDomElements() {
+        const ids = [
+            "myRange", "imageCanvas", "loading", "viewDemo", "createOwn",
+            "appContainer", "uploadButton", "zoomInput", "zoomControls",
+            "heading", "subheading", "steal", "tutorialButton", "fileName",
+            "download", "saveButton", "randomButton", "skipOne", "skipTen",
+            "skipBackOne", "skipBackTen"
+        ];
+        return ids.reduce((acc, id) => ({ ...acc, [id]: document.getElementById(id) }), {});
+    }
 
-    // Display the placeholder image initially
-    displayImage(0, 2);
+    addEventListeners() {
+        this.domElements.myRange.addEventListener('input', this.handleSliderInput.bind(this));
+        this.domElements.viewDemo.addEventListener('click', this.handleViewDemo.bind(this));
+        this.domElements.createOwn.addEventListener('click', this.handleCreateOwn.bind(this));
+        this.domElements.uploadButton.addEventListener('change', this.handleUpload.bind(this));
+        this.domElements.zoomInput.addEventListener('change', this.handleZoomChange.bind(this));
+        this.domElements.download.addEventListener('click', this.handleDownload.bind(this));
+        this.domElements.saveButton.addEventListener('click', this.handleSave.bind(this));
+        this.domElements.randomButton.addEventListener('click', this.handleRandom.bind(this));
+        this.domElements.skipOne.addEventListener('click', this.handleSkipOne.bind(this));
+        this.domElements.skipTen.addEventListener('click', this.handleSkipTen.bind(this));
+        this.domElements.skipBackOne.addEventListener('click', this.handleSkipBackOne.bind(this));
+        this.domElements.skipBackTen.addEventListener('click', this.handleSkipBackTen.bind(this));
+    }
 
-    for (let i = 0; i < totalImages; i++) {
-        for (let ext of imageExtensions) {
-            loadingPromises.push(
-                loadImage(imagePaths[i], ext)
-                    .then(img => {
-                        images[i] = img;
-                        // If the loaded image is the placeholder image, redraw the canvas
-                        if (imagePaths[i] === '001') {
-                            displayImage(0, 2);
-                        }
-                        // Enable the slider and hide the loading screen once an image is loaded
-                        slider.disabled = false; 
-                        loading.style.display = "none";
-                    })
-                    .catch(err => {
-                        console.error(err.message);
-                        // Reached the end of the sequence
-                        totalImages = i;
-                        throw err; // Rethrow to stop loading further images
-                    })
-            );
+    handleSliderInput() {
+        let val = this.domElements.myRange.value;
+        let framesPerImage = Math.ceil(this.domElements.myRange.max / this.totalImages);
+        let imageIndex = Math.min(Math.floor(val / framesPerImage), this.totalImages - 1);
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (this.maxZoom - 1.1) / (framesPerImage - 1);
+        let zoom;
+        if (frameProgress === 0 && imageIndex !== this.totalImages - 1) {
+            zoom = this.maxZoom;
+        } else if (imageIndex === this.totalImages - 1 && frameProgress === 0) {
+            if (val === this.domElements.myRange.max){
+                zoom = 1.0
+            } else {
+                zoom = this.maxZoom;
+            }   
+        } else {
+            zoom = this.maxZoom - frameProgress * zoomDecrement;
         }
-        if (totalImages === i) break;
+        this.displayImage(imageIndex, zoom);
     }
 
-    try {
-        await Promise.all(loadingPromises);
-    } catch (err) {
-        // Do nothing, this is expected when we've reached the end of the sequence
+    handleViewDemo() {
+        this.domElements.appContainer.style.display = "flex";
+        this.domElements.appContainer.style.flexDirection = "column";
+        this.domElements.viewDemo.style.display = "none";
+        this.domElements.createOwn.style.display = "none";
+        this.domElements.tutorialButton.style.display = "none";
+        this.domElements.subheading.style.display = "none";
+        this.loadImages();
     }
 
-    slider.max = (maxZoom - 1) * 10 * totalImages; // update slider's max value after all images are loaded
-};
-
-loading.style.display = "flex"; // show loading screen
-
-loadImages();
-
-
-let displayImage = (index, zoom) => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.save();
-    context.translate(canvas.width / 2, canvas.height / 2);
-    context.scale(zoom, zoom);
-    context.translate(-canvas.width / 2, -canvas.height / 2);
-    if (images[index]) {
-        context.drawImage(images[index], 0, 0, canvas.width, canvas.height);
-    } else {
-        context.fillStyle = 'gray';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = 'white';
-        context.font = '24px Arial';
-        context.textAlign = 'center';
-        context.fillText('Loading...', canvas.width / 2, canvas.height / 2);
-    }
-    context.restore();
-};
-
-
-loading.style.display = "flex"; // show loading screen
-
-loadImages();
-
-slider.oninput = function() {
-    let val = this.value;
-    let framesPerImage = Math.ceil(slider.max / totalImages);
-    let imageIndex = Math.min(Math.floor(val / framesPerImage), totalImages - 1);
-
-    let frameProgress = val % framesPerImage;
-
-    let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
-
-    let zoom;
-    if (frameProgress === 0 && imageIndex !== totalImages - 1) {
-        zoom = maxZoom;
-    } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        if(val == slider.max){
-            zoom = 1.0
-        } else {
-            zoom = maxZoom;
-        }   
-    } else {
-        zoom = maxZoom - frameProgress * zoomDecrement;
+    handleCreateOwn() {
+        this.domElements.uploadButton.click();
     }
 
-    displayImage(imageIndex, zoom);
-};
-
-
-
-
-
-
-
-let saveButton = document.getElementById("saveButton");
-
-saveButton.addEventListener('click', function () {
-    let dataUrl = canvas.toDataURL('image/png');
-    let a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = 'SLIDE ' + slider.value + '.png';
-    a.click();
-});
-
-
-let randomButton = document.getElementById("randomButton");
-
-randomButton.addEventListener('click', function () {
-    // Generate a random integer between 0 and the slider's max value
-    let randomValue = Math.floor(Math.random() * (slider.max - slider.min + 1)) + Number(slider.min);
-    slider.value = randomValue;
-
-    // Update the image and zoom based on the new slider value
-    let imageIndex = Math.floor(randomValue / 10);
-    let zoom = 2 - (randomValue % 10) * 0.1;
-    imageIndex = Math.min(imageIndex, images.length - 1);
-    displayImage(imageIndex, zoom);
-});
-
-
-let skipOneButton = document.getElementById("skipOne");
-let skipTenButton = document.getElementById("skipTen");
-
-skipOneButton.addEventListener('click', function() {
-    let newValue = Math.min(Number(slider.value) + 1, slider.max);
-    slider.value = newValue;
-    let val = newValue;
-    let framesPerImage = Math.ceil(slider.max / totalImages);
-    let imageIndex = Math.min(Math.floor(val / framesPerImage), totalImages - 1);
-    let frameProgress = val % framesPerImage;
-
-    let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
-    let zoom;
-    if (frameProgress === 0 && imageIndex !== totalImages - 1) {
-        zoom = maxZoom;
-    } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        if(val == slider.max){
-            zoom = 1.0
-        } else {
-            zoom = maxZoom;
-        }   
-    } else {
-        zoom = maxZoom - frameProgress * zoomDecrement;
-    }
-    displayImage(imageIndex, zoom);
-});
-
-skipTenButton.addEventListener('click', function() {
-    let newValue = Math.min(Number(slider.value) + 10, slider.max);
-    slider.value = newValue;
-    let val = newValue;
-    let framesPerImage = Math.ceil(slider.max / totalImages);
-    let imageIndex = Math.min(Math.floor(val / framesPerImage), totalImages - 1);
-    let frameProgress = val % framesPerImage;
-
-    let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
-    let zoom;
-    if (frameProgress === 0 && imageIndex !== totalImages - 1) {
-        zoom = maxZoom;
-    } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        if(val == slider.max){
-            zoom = 1.0
-        } else {
-            zoom = maxZoom;
-        }   
-    } else {
-        zoom = maxZoom - frameProgress * zoomDecrement;
-    }
-    displayImage(imageIndex, zoom);
-});
-
-let skipBackOneButton = document.getElementById("skipBackOne");
-let skipBackTenButton = document.getElementById("skipBackTen");
-
-
-skipBackOneButton.addEventListener('click', function() {
-    let newValue = Math.max(Number(slider.value) - 1, slider.min);
-    slider.value = newValue;
-    let val = newValue;
-    let framesPerImage = Math.ceil(slider.max / totalImages);
-    let imageIndex = Math.min(Math.floor(val / framesPerImage), totalImages - 1);
-    let frameProgress = val % framesPerImage;
-
-    let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
-    let zoom;
-    if (frameProgress === 0 && imageIndex !== totalImages - 1) {
-        zoom = maxZoom;
-    } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        if(val == slider.max){
-            zoom = 1.0
-        } else {
-            zoom = maxZoom;
-        }   
-    } else {
-        zoom = maxZoom - frameProgress * zoomDecrement;
-    }
-    displayImage(imageIndex, zoom);
-});
-
-skipBackTenButton.addEventListener('click', function() {
-    let newValue = Math.max(Number(slider.value) - 10, slider.min);
-    slider.value = newValue;
-    let val = newValue;
-    let framesPerImage = Math.ceil(slider.max / totalImages);
-    let imageIndex = Math.min(Math.floor(val / framesPerImage), totalImages - 1);
-    let frameProgress = val % framesPerImage;
-
-    let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
-    let zoom;
-    if (frameProgress === 0 && imageIndex !== totalImages - 1) {
-        zoom = maxZoom;
-    } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-        if(val == slider.max){
-            zoom = 1.0
-        } else {
-            zoom = maxZoom;
-        }   
-    } else {
-        zoom = maxZoom - frameProgress * zoomDecrement;
-    }
-    displayImage(imageIndex, zoom);
-});
-
-
-
-// Function to validate image sizes
-const validateImageSizes = async (files) => {
-    let width, height;
-    for (let file of files) {
-        let img = new Image();
-        img.src = URL.createObjectURL(file);
-        await new Promise((resolve) => {
+    async handleUpload() {
+        let uploadedFiles = Array.from(this.domElements.uploadButton.files);
+        let [width, height] = await this.validateImageSizes(uploadedFiles);
+        this.domElements.imageCanvas.width = width / 2;
+        this.domElements.imageCanvas.height = height / 2;
+        if (uploadedFiles.length > 0) {
+            this.domElements.appContainer.style.display = "flex";
+            this.domElements.appContainer.style.flexDirection = "column";
+            this.domElements.viewDemo.style.display = "none";
+            this.domElements.zoomControls.style.display = "flex";
+            this.domElements.createOwn.style.display = "none";
+            this.domElements.subheading.style.display = "none";
+            this.domElements.heading.style.display = "none";
+            this.domElements.steal.style.display = "none";
+            this.domElements.tutorialButton.style.display = "none";
+            if (uploadedFiles.length <= 50) {
+                this.domElements.download.style.display = 'inline-block';
+            } else {
+                this.domElements.download.style.display = 'none';
+            }
+        }
+        this.images = [];
+        uploadedFiles.sort((a, b) => a.name.localeCompare(b.name));
+        uploadedFiles.forEach((file, index) => {
+            let img = new Image();
+            img.src = URL.createObjectURL(file);
             img.onload = () => {
-                if (width && height) {
-                    if (img.width !== width || img.height !== height) {
-                        throw new Error('Images must all be the same frame size');
-                    }
-                } else {
-                    width = img.width;
-                    height = img.height;
+                URL.revokeObjectURL(img.src);
+                this.images[index] = img;
+                if (index === 0) {
+                    this.displayImage(0, 2);
                 }
-                resolve();
             };
         });
+        this.totalImages = uploadedFiles.length;
+        this.domElements.myRange.max = this.totalImages * 10;
+        this.domElements.myRange.value = 0;
+        this.displayImage(0, 2);
     }
-    return [width, height];
-};
 
-// When 'View Demo' is clicked, show the app container and start loading images
-viewDemoButton.addEventListener('click', function() {
-    appContainer.style.display = "flex";
-    appContainer.style.flexDirection = "column";
-    this.style.display = "none";
-    createOwnButton.style.display = "none";
-    tutorialButton.style.display = "none";
-    subheading.style.display = "none";
-    loadImages(); // start loading the images
-});
+    handleZoomChange() {
+        this.maxZoom = Number(this.domElements.zoomInput.value);
+        this.domElements.myRange.max = (this.maxZoom - 1) * 10 * this.totalImages;
+        this.displayImage(Math.floor(this.domElements.myRange.value / (10 * this.maxZoom)), this.maxZoom - (this.domElements.myRange.value % (10 * this.maxZoom)) * 0.1);
+    }
 
-// When 'Create my own' is clicked, trigger the file selection
-createOwnButton.addEventListener('click', function() {
-    uploadButton.click(); // simulate click on file input
-});
-
-uploadButton.addEventListener('change', async function() {
-    let uploadedFiles = Array.from(this.files); // Convert FileList to Array
-
-    // Validate image sizes and get their dimensions
-    let [width, height] = await validateImageSizes(uploadedFiles);
-
-    // Adjust canvas size
-    canvas.width = width / 2;
-    canvas.height = height / 2;
-
-    // Show or hide the download button depending on the number of uploaded files
-    if (uploadedFiles.length > 0) {
-        appContainer.style.display = "flex";
-        appContainer.style.flexDirection = "column";
-        viewDemoButton.style.display = "none";
-        zoomControls.style.display = "flex";
-        createOwnButton.style.display = "none";
-        subheading.style.display = "none";
-        heading.style.display = "none";
-        steal.style.display = "none";
-        tutorialButton.style.display = "none";
-        if (uploadedFiles.length <= 50) {
-            downloadButton.style.display = 'inline-block';
-        } else {
-            downloadButton.style.display = 'none';
-        
-
+    async handleDownload() {
+        let confirmation = confirm("Warning, this function can crash your browser if it can't handle the number of images. Proceed?");
+        if (!confirmation) {
+            return;
         }
-    }
-
-    // Reset the images array
-    images = [];
-
-    // Sort files alphabetically
-    uploadedFiles.sort((a, b) => a.name.localeCompare(b.name));
-
-    // Convert File objects to Image objects and add them to the images array
-    uploadedFiles.forEach((file, index) => {
-        let img = new Image();
-
-        img.src = URL.createObjectURL(file);
-
-        img.onload = () => {
-            URL.revokeObjectURL(img.src); // Release memory
-            images[index] = img;
-
-            // If the first image was loaded, redraw the canvas
-            if (index === 0) {
-                displayImage(0, 2);
-            }
-        };
-    });
-
-    totalImages = uploadedFiles.length; // update total images count
-
-    slider.max = totalImages  * 10; // update slider's max value
-    slider.value = 0; // reset slider value
-
-    // display the first image immediately
-    displayImage(0, 2);
-});
-
-document.getElementById("uploadButton").addEventListener('change', (event) => {
-    let uploadButton = document.getElementById("uploadButton");
-    let fileName = document.getElementById("fileName");
-
-    if(uploadButton.files.length > 0) {
-        fileName.innerText = uploadButton.files.length + " images added";
-    } else {
-        fileName.innerText = "No images added";
-    }
-});
-
-
-let downloadButton = document.getElementById("download");
-
-downloadButton.addEventListener('click', async function () {
-    let confirmation = confirm("Warning, this function can crash your browser if it can't handle the number of images. Proceed?");
-    
-    if (!confirmation) {
-        return;
-    }
-
-    let zip = new JSZip();
-
-    for (let i = 0; i <= slider.max; i++) {
-        slider.value = i;
-        let framesPerImage = Math.ceil(slider.max / totalImages);
-        let imageIndex = Math.min(Math.floor(i / framesPerImage), totalImages - 1);
-        let frameProgress = i % framesPerImage;
-
-        let zoomDecrement = (maxZoom - 1.1) / (framesPerImage - 1);
-        let zoom;
-        if (frameProgress === 0 && imageIndex !== totalImages - 1) {
-            zoom = maxZoom;
-        } else if (imageIndex === totalImages - 1 && frameProgress === 0) {
-            if (i == slider.max){
-                zoom = 1;
+        let zip = new JSZip();
+        for (let i = 0; i <= this.domElements.myRange.max; i++) {
+            this.domElements.myRange.value = i;
+            let framesPerImage = Math.ceil(this.domElements.myRange.max / this.totalImages);
+            let imageIndex = Math.min(Math.floor(i / framesPerImage), this.totalImages - 1);
+            let frameProgress = i % framesPerImage;
+            let zoomDecrement = (this.maxZoom - 1.1) / (framesPerImage - 1);
+            let zoom;
+            if (frameProgress === 0 && imageIndex !== this.totalImages - 1) {
+                zoom = this.maxZoom;
+            } else if (imageIndex === this.totalImages - 1 && frameProgress === 0) {
+                if (i === this.domElements.myRange.max){
+                    zoom = 1;
+                } else {
+                    zoom = this.maxZoom
+                }
             } else {
-                zoom = maxZoom
+                zoom = this.maxZoom - frameProgress * zoomDecrement;
             }
-        } else {
-            zoom = maxZoom - frameProgress * zoomDecrement;
+            this.displayImage(imageIndex, zoom);
+            let dataUrl = this.domElements.imageCanvas.toDataURL('image/png');
+            let base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+            zip.file(`SLIDE ${i}.png`, base64Data, {base64: true});
         }
-        displayImage(imageIndex, zoom);
-
-        let dataUrl = canvas.toDataURL('image/png');
-        let base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
-        zip.file(`SLIDE ${i}.png`, base64Data, {base64: true});
+        zip.generateAsync({type:"blob"}).then(function(content) {
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = 'SLIDES.zip';
+            a.click();
+        });
     }
 
-    zip.generateAsync({type:"blob"}).then(function(content) {
+    handleSave() {
+        let dataUrl = this.domElements.imageCanvas.toDataURL('image/png');
         let a = document.createElement('a');
-        a.href = URL.createObjectURL(content);
-        a.download = 'SLIDES.zip';
+        a.href = dataUrl;
+        a.download = 'SLIDE ' + this.domElements.myRange.value + '.png';
         a.click();
-    });
-});
+    }
 
+    handleRandom() {
+        let randomValue = Math.floor(Math.random() * (this.domElements.myRange.max - this.domElements.myRange.min + 1)) + Number(this.domElements.myRange.min);
+        this.domElements.myRange.value = randomValue;
+        let imageIndex = Math.floor(randomValue / 10);
+        let zoom = 2 - (randomValue % 10) * 0.1;
+        imageIndex = Math.min(imageIndex, this.images.length - 1);
+        this.displayImage(imageIndex, zoom);
+    }
 
+    handleSkipOne() {
+        this.handleSkip(1);
+    }
+
+    handleSkipTen() {
+        this.handleSkip(10);
+    }
+
+    handleSkipBackOne() {
+        this.handleSkipBack(1);
+    }
+
+    handleSkipBackTen() {
+        this.handleSkipBack(10);
+    }
+
+    handleSkip(skipAmount) {
+        let newValue = Math.min(Number(this.domElements.myRange.value) + skipAmount, this.domElements.myRange.max);
+        this.updateImageAndZoom(newValue);
+    }
+
+    handleSkipBack(skipAmount) {
+        let newValue = Math.max(Number(this.domElements.myRange.value) - skipAmount, this.domElements.myRange.min);
+        this.updateImageAndZoom(newValue);
+    }
+
+    updateImageAndZoom(newValue) {
+        this.domElements.myRange.value = newValue;
+        let val = newValue;
+        let framesPerImage = Math.ceil(this.domElements.myRange.max / this.totalImages);
+        let imageIndex = Math.min(Math.floor(val / framesPerImage), this.totalImages - 1);
+        let frameProgress = val % framesPerImage;
+        let zoomDecrement = (this.maxZoom - 1.1) / (framesPerImage - 1);
+        let zoom;
+        if (frameProgress === 0 && imageIndex !== this.totalImages - 1) {
+            zoom = this.maxZoom;
+        } else if (imageIndex === this.totalImages - 1 && frameProgress === 0) {
+            if(val === this.domElements.myRange.max){
+                zoom = 1.0
+            } else {
+                zoom = this.maxZoom;
+            }   
+        } else {
+            zoom = this.maxZoom - frameProgress * zoomDecrement;
+        }
+        this.displayImage(imageIndex, zoom);
+    }
+
+    async loadImage(path, extension) {
+        let response = await fetch(`./images/${path}.${extension}`, {mode: 'no-cors'});
+        if (!response.ok) {
+            throw new Error(`Failed to load image ./images/${path}.${extension}`);
+        }
+        let img = new Image();
+        img.src = `./images/${path}.${extension}`;
+        return new Promise((resolve, reject) => {
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+        });
+    }
+
+    async loadImages() {
+        let loadingPromises = [];
+        this.displayImage(0, 2);
+        for (let i = 0; i < this.totalImages; i++) {
+            for (let ext of this.imageExtensions) {
+                loadingPromises.push(
+                    this.loadImage(this.imagePaths[i], ext)
+                        .then(img => {
+                            this.images[i] = img;
+                            if (this.imagePaths[i] === '001') {
+                                this.displayImage(0, 2);
+                            }
+                            this.domElements.myRange.disabled = false; 
+                            this.domElements.loading.style.display = "none";
+                        })
+                        .catch(err => {
+                            console.error(err.message);
+                            this.totalImages = i;
+                            throw err;
+                        })
+                );
+            }
+            if (this.totalImages === i) break;
+        }
+        try {
+            await Promise.all(loadingPromises);
+        } catch (err) {
+            // Do nothing
+        }
+        this.domElements.myRange.max = (this.maxZoom - 1) * 10 * this.totalImages;
+    }
+
+    displayImage(index, zoom) {
+        let context = this.domElements.imageCanvas.getContext("2d");
+        context.clearRect(0, 0, this.domElements.imageCanvas.width, this.domElements.imageCanvas.height);
+        context.save();
+        context.translate(this.domElements.imageCanvas.width / 2, this.domElements.imageCanvas.height / 2);
+        context.scale(zoom, zoom);
+        context.translate(-this.domElements.imageCanvas.width / 2, -this.domElements.imageCanvas.height / 2);
+        if (this.images[index]) {
+            context.drawImage(this.images[index], 0, 0, this.domElements.imageCanvas.width, this.domElements.imageCanvas.height);
+        } else {
+            context.fillStyle = 'gray';
+            context.fillRect(0, 0, this.domElements.imageCanvas.width, this.domElements.imageCanvas.height);
+            context.fillStyle = 'white';
+            context.font = '24px Arial';
+            context.textAlign = 'center';
+            context.fillText('Loading...', this.domElements.imageCanvas.width / 2, this.domElements.imageCanvas.height / 2);
+        }
+        context.restore();
+    }
+
+    async validateImageSizes(files) {
+        let width, height;
+        for (let file of files) {
+            let img = new Image();
+            img.src = URL.createObjectURL(file);
+            await new Promise((resolve) => {
+                img.onload = () => {
+                    if (width && height) {
+                        if (img.width !== width || img.height !== height) {
+                            throw new Error('Images must all be the same frame size');
+                        }
+                    } else {
+                        width = img.width;
+                        height = img.height;
+                    }
+                    resolve();
+                };
+            });
+        }
+        return [width, height];
+    }
+}
+
+new SlideApp();
